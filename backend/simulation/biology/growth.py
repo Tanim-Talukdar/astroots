@@ -142,7 +142,7 @@ def simulate_growth_day(
         environment.field_capacity_mm,
     )
 
-    canopy_fraction = plant.state.canopy_cover_percent / 100
+    canopy_fraction = plant.state.canopy_cover_percent / 100.0
 
     crop_coefficient = 0.3 + 0.7 * canopy_fraction
 
@@ -167,7 +167,7 @@ def simulate_growth_day(
     living_tissue_factor = max(
         0.0,
         1.0 - (
-            plant.state.permanent_tissue_loss_percent / 100
+            plant.state.permanent_tissue_loss_percent / 100.0
         ),
     )
 
@@ -217,7 +217,7 @@ def simulate_growth_day(
         crop.maximum_canopy_cover
         - plant.state.canopy_cover_percent
     ) * (
-        1 - math.exp(-0.0015 * thermal_time)
+        1.0 - math.exp(-0.0015 * thermal_time)
     ) * temperature_stress * water_stress * living_tissue_factor
 
     new_canopy = min(
@@ -227,7 +227,8 @@ def simulate_growth_day(
 
     # 7. Root development
     root_growth = (
-        thermal_time * 0.03
+        thermal_time
+        * 0.03
         * temperature_stress
         * water_stress
         * living_tissue_factor
@@ -250,7 +251,8 @@ def simulate_growth_day(
 
     # 9. Plant height
     height_growth = (
-        thermal_time * 0.01
+        thermal_time
+        * 0.01
         * temperature_stress
         * water_stress
         * living_tissue_factor
@@ -279,10 +281,15 @@ def simulate_growth_day(
         / LIGHT_REFERENCE_PAR[species],
     )
 
-    nutrient_factor = max(
-        0.0,
-        min(1.0, 1.0 - nutrient_result.overall_stress),
+    npk_sufficiency = (
+        0.40 * (1.0 - nutrient_result.nitrogen_stress)
+        + 0.30 * (1.0 - nutrient_result.phosphorus_stress)
+        + 0.30 * (1.0 - nutrient_result.potassium_stress)
     )
+
+    ph_sufficiency = 1.0 - nutrient_result.ph_stress
+
+    nutrient_factor = npk_sufficiency * ph_sufficiency
 
     salinity_factor = max(
         0.0,
@@ -297,16 +304,17 @@ def simulate_growth_day(
         salinity_factor=salinity_factor,
     )
 
-    # 13. Stress accumulation and recovery
+    # 13. Stress accumulation and species-specific recovery
     recovery = calculate_recovery(
         previous_stress_days=plant.state.stress_days,
         previous_accumulated_stress=plant.state.accumulated_stress,
         previous_damage_percent=plant.state.damage_percent,
         previous_recovery_days=plant.state.recovery_days,
         health_score=health.health_score,
+        recovery_rate=crop.recovery_rate,
     )
 
-    # 14. Physical tissue damage
+    # 14. Physical tissue damage with species-specific sensitivity
     biomass_before_damage = (
         plant.state.biomass_g + biomass_gain
     )
@@ -318,6 +326,7 @@ def simulate_growth_day(
         ),
         biomass_g=biomass_before_damage,
         canopy_cover_percent=new_canopy,
+        damage_sensitivity=crop.damage_sensitivity,
     )
 
     new_biomass = damage.biomass_after_damage_g

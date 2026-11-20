@@ -21,6 +21,10 @@ class CropParameters:
     initial_biomass_g: float
     initial_seed_reserve_g: float
 
+    # Provisional prototype coefficients; require crop-specific validation.
+    damage_sensitivity: float
+    recovery_rate: float
+
 
 CROP_PARAMETERS = {
     "tomato": CropParameters(
@@ -39,7 +43,10 @@ CROP_PARAMETERS = {
         initial_canopy_cover_percent=2.0,
         initial_biomass_g=0.08,
         initial_seed_reserve_g=0.02,
+        damage_sensitivity=1.00,
+        recovery_rate=3.0,
     ),
+
     "cucumber": CropParameters(
         species="cucumber",
         base_temperature_c=12,
@@ -56,7 +63,10 @@ CROP_PARAMETERS = {
         initial_canopy_cover_percent=2.5,
         initial_biomass_g=0.07,
         initial_seed_reserve_g=0.02,
+        damage_sensitivity=0.95,
+        recovery_rate=2.8,
     ),
+
     "lettuce": CropParameters(
         species="lettuce",
         base_temperature_c=4,
@@ -73,5 +83,7 @@ CROP_PARAMETERS = {
         initial_canopy_cover_percent=3.0,
         initial_biomass_g=0.06,
         initial_seed_reserve_g=0.015,
+        damage_sensitivity=1.15,
+        recovery_rate=2.5,
     ),
 }
