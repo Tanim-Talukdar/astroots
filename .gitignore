@@ -1,0 +1,47 @@
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Python testing and tools
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# IDE and operating system
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Node.js
+node_modules/
+.next/
+out/
+dist/
+frontend/dist/
+
+# AgriSphere AI uploads
+backend/uploads/
+
+# All Python virtual environments
+**/.venv/
+**/venv/
